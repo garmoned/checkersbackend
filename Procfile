@@ -1,1 +1,1 @@
-web: src
+web: sh src.sh
