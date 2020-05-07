@@ -61,29 +61,36 @@ func montecarlomove(board [][]square, color string) piecemove {
 
 	}
 
-	for i := 0; i < 1000; i++ {
+	var iterations = 2000
 
-		var promisingNode = selectNode(&root)
-		expandNode(promisingNode)
-
-		var testNode = promisingNode
-
-		if len(promisingNode.children) > 0 {
-			testNode = promisingNode.children[(int)(math.Floor((float64)(rand.Intn(len(promisingNode.children)))))]
-
-		}
-
-		playOut(testNode, color)
-
+	for i := 0; i < iterations; i++ {
+		expandtree(&root, color)
 	}
 
 	return selectBestMove(root)
+}
+
+func expandtree(root *node, color string) {
+
+	var promisingNode = selectNode(root)
+	expandNode(promisingNode)
+
+	var testNode = promisingNode
+
+	if len(promisingNode.children) > 0 {
+		testNode = promisingNode.children[(int)(math.Floor((float64)(rand.Intn(len(promisingNode.children)))))]
+
+	}
+
+	playOut(testNode, color)
+
 }
 
 func selectBestMove(root node) piecemove {
 	var bestNode = root.children[0]
 
 	for _, node := range root.children {
+		fmt.Println("sims: ", node.sims)
 		if bestNode.sims < node.sims {
 			bestNode = node
 		}

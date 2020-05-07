@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/rand"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -48,8 +49,15 @@ func main() {
 
 	rand.Seed(time.Now().UTC().UnixNano())
 
+	port := os.Getenv("PORT")
+
+	if port == "" {
+		fmt.Println("$PORT not set--setting to default 8080")
+		port = "8080"
+	}
+
 	http.HandleFunc("/", readJSON)
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		panic(err)
 	}
 }
