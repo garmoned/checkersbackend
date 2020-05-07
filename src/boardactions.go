@@ -6,6 +6,10 @@ import (
 	"math/rand"
 )
 
+const capture string = "capture"
+const null string = "null"
+const constMove string = "move"
+
 type node struct {
 	wins int
 	sims int
@@ -137,13 +141,13 @@ func playmove(movetomake piecemove, board [][]square) [][]square {
 	var pColor = newBoard[movetomake.Piece.Xpos][movetomake.Piece.Ypos].Color
 	var pKing = newBoard[movetomake.Piece.Xpos][movetomake.Piece.Ypos].King
 
-	newBoard[movetomake.Piece.Xpos][movetomake.Piece.Ypos].Color = "null"
+	newBoard[movetomake.Piece.Xpos][movetomake.Piece.Ypos].Color = null
 	newBoard[movetomake.Piece.Xpos][movetomake.Piece.Ypos].King = false
 
 	newBoard[movetomake.Piecemove.X][movetomake.Piecemove.Y].Color = pColor
 	newBoard[movetomake.Piecemove.X][movetomake.Piecemove.Y].King = pKing
 
-	if movetomake.Piecemove.Flag == "capture" {
+	if movetomake.Piecemove.Flag == capture {
 		newBoard[movetomake.Piecemove.PositionOfOpp.X][movetomake.Piecemove.PositionOfOpp.Y].Color = "null"
 		newBoard[movetomake.Piecemove.PositionOfOpp.X][movetomake.Piecemove.PositionOfOpp.Y].King = false
 	}
@@ -164,8 +168,8 @@ func getLoser(board [][]square, startingColor string) string {
 		var newColor = opposingColor(startingColor)
 		var newMoves = generateAllValidMoves(newBoard, startingColor)
 
-		if newMove.Piecemove.Flag == "capture" && (len(newMoves) > 0) &&
-			newMoves[0].Piecemove.Flag == "capture" {
+		if newMove.Piecemove.Flag == capture && (len(newMoves) > 0) &&
+			newMoves[0].Piecemove.Flag == capture {
 
 			newColor = startingColor
 
@@ -203,11 +207,11 @@ func expandNode(node *node) {
 
 	var newColor = opposingColor(node.movecolor)
 
-	if node.move.Piecemove.Flag == "capture" {
+	if node.move.Piecemove.Flag == capture {
 
 		newmoves := generateValidMoves(node.boardState, node.move.Piece.Xpos, node.move.Piece.Ypos, node.movecolor)
 
-		if len(newmoves) > 0 && newmoves[0].Flag == "capture" {
+		if len(newmoves) > 0 && newmoves[0].Flag == capture {
 			newColor = node.movecolor
 		}
 	}
@@ -269,7 +273,7 @@ func generateAllValidMoves(board [][]square, color string) []piecemove {
 		for x := range row {
 			if board[x][y].Color == color {
 				for _, move := range generateValidMoves(board, x, y, color) {
-					if move.Flag == "capture" {
+					if move.Flag == capture {
 						captures = append(captures, piecemove{piece{x, y}, move})
 					} else {
 						moves = append(moves, piecemove{piece{x, y}, move})
@@ -309,10 +313,10 @@ func generateValidMoves(board [][]square, x int, y int, color string) []move {
 
 				var newMove move
 				if board[x+xdir][y+ydir].Color == opposingColor(color) && inRange(x+xdir*2, y+ydir*2) && board[x+xdir*2][y+ydir*2].Color == "null" {
-					newMove = move{x + xdir*2, y + ydir*2, "capture", opponentPos{x + xdir, y + ydir}}
+					newMove = move{x + xdir*2, y + ydir*2, capture, opponentPos{x + xdir, y + ydir}}
 					moves = append(moves, newMove)
-				} else if board[x+xdir][y+ydir].Color == "null" {
-					newMove = move{x + xdir, y + ydir, "move", opponentPos{x + xdir, y + ydir}}
+				} else if board[x+xdir][y+ydir].Color == null {
+					newMove = move{x + xdir, y + ydir, constMove, opponentPos{x + xdir, y + ydir}}
 					moves = append(moves, newMove)
 				}
 			}
