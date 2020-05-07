@@ -35,8 +35,6 @@ func readJSON(w http.ResponseWriter, r *http.Request) {
 
 	printBoard(req.Board)
 
-	//fmt.Println(montyMove)
-
 	var jsonData, _ = json.Marshal(montyMove)
 
 	fmt.Println(string(jsonData))
