@@ -1,1 +1,1 @@
-go run boardactions.go hello.go
+web: go run src/boardactions.go src/hello.go
