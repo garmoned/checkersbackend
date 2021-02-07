@@ -59,13 +59,9 @@ func montecarlomove(board [][]square, color string) piecemove {
 		return startingMoves[0]
 	}
 
-	for _, move := range startingMoves {
+	expandNode(&root)
 
-		root.children = append(root.children, createNewNode(move, board, color, &root))
-
-	}
-
-	var iterations = 2000
+	var iterations = 5000
 
 	for i := 0; i < iterations; i++ {
 		expandtree(&root, color)
@@ -77,6 +73,7 @@ func montecarlomove(board [][]square, color string) piecemove {
 func expandtree(root *node, color string) {
 
 	var promisingNode = selectNode(root)
+
 	expandNode(promisingNode)
 
 	var testNode = promisingNode
