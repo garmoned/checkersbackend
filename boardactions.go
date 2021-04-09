@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
+	"sync"
 )
 
 const capture string = "capture"
@@ -61,11 +62,13 @@ func montecarlomove(board [][]square, color string) piecemove {
 
 	expandNode(&root)
 
-	var iterations = 5000
+	var iterations = 1000
 
 	for i := 0; i < iterations; i++ {
 		expandtree(&root, color)
 	}
+
+	recurPrint(&root)
 
 	return selectBestMove(root)
 }
@@ -91,13 +94,35 @@ func selectBestMove(root node) piecemove {
 	var bestNode = root.children[0]
 
 	for _, node := range root.children {
-		fmt.Println("sims: ", node.sims)
+
 		if bestNode.sims < node.sims {
 			bestNode = node
 		}
 	}
 
+	recurPrint(bestNode)
+
 	return bestNode.move
+}
+
+func recurPrint(node *node) {
+
+	if len(node.children) == 0 {
+		return
+	}
+
+	bestNode := node.children[0]
+
+	for _, child := range node.children {
+
+		if child.sims > bestNode.sims {
+			bestNode = child
+		}
+
+	}
+
+	fmt.Println("move ", bestNode.movecolor, " ", bestNode.move.Piece, " moves  to {", bestNode.move.Piecemove.X, " ", bestNode.move.Piecemove.Y, "} ", " sims ", bestNode.sims)
+	recurPrint(bestNode)
 }
 
 func selectNode(node *node) *node {
@@ -158,11 +183,15 @@ func playmove(movetomake piecemove, board [][]square) [][]square {
 }
 
 func getLoser(board [][]square, startingColor string) string {
+
 	var moves = generateAllValidMoves(board, startingColor)
+
 	if len(moves) > 0 {
+
 		var newMove = randomMove(board, startingColor)
 		var newBoard = playmove(newMove, board)
 		var newColor = opposingColor(startingColor)
+
 		var newMoves = generateAllValidMoves(newBoard, startingColor)
 
 		if newMove.Piecemove.Flag == capture && (len(newMoves) > 0) &&
@@ -177,6 +206,38 @@ func getLoser(board [][]square, startingColor string) string {
 	}
 
 	return startingColor
+}
+
+func getLoserMT(board [][]square, startingColor string, losers chan string, wg *sync.WaitGroup) {
+
+	defer wg.Done()
+
+	var moves = generateAllValidMoves(board, startingColor)
+
+	for len(moves) > 0 {
+
+		var newMove = moves[rand.Intn(len(moves))]
+
+		var newBoard = playmove(newMove, board)
+
+		var newColor = opposingColor(startingColor)
+
+		var newMoves = generateAllValidMoves(newBoard, startingColor)
+
+		if newMove.Piecemove.Flag == capture && (len(newMoves) > 0) &&
+			newMoves[0].Piecemove.Flag == capture {
+			newColor = startingColor
+		}
+
+		board = newBoard
+		startingColor = newColor
+
+		moves = generateAllValidMoves(board, startingColor)
+	}
+
+	losers <- startingColor
+
+	return
 }
 
 func backPropagate(node *node, win bool) {
@@ -196,7 +257,25 @@ func backPropagate(node *node, win bool) {
 
 func playOut(node *node, rootcolor string) {
 
-	backPropagate(node, rootcolor != getLoser(copyBoard(node.boardState), rootcolor))
+	num_threads := 1
+
+	losers := make(chan string, num_threads)
+	var wg sync.WaitGroup
+
+	for i := 0; i < num_threads; i++ {
+
+		wg.Add(1)
+		go getLoserMT(copyBoard(node.boardState), rootcolor, losers, &wg)
+	}
+
+	wg.Wait()
+	close(losers)
+
+	for res := range losers {
+
+		backPropagate(node, res != rootcolor)
+
+	}
 
 }
 
@@ -206,7 +285,7 @@ func expandNode(node *node) {
 
 	if node.move.Piecemove.Flag == capture {
 
-		newmoves := generateValidMoves(node.boardState, node.move.Piece.Xpos, node.move.Piece.Ypos, node.movecolor)
+		newmoves := generateValidMoves(node.boardState, node.move.Piece.Xpos, node.move.Piece.Ypos, newColor)
 
 		if len(newmoves) > 0 && newmoves[0].Flag == capture {
 			newColor = node.movecolor
@@ -294,15 +373,16 @@ func generateValidMoves(board [][]square, x int, y int, color string) []move {
 
 	var ydirs = []int{-1, 1}
 
+	var xdirs []int
+	if board[x][y].King {
+		xdirs = []int{1, -1}
+	} else if board[x][y].Color == "r" {
+		xdirs = []int{1}
+	} else if board[x][y].Color == "w" {
+		xdirs = []int{-1}
+	}
+
 	for _, ydir := range ydirs {
-		var xdirs []int
-		if board[x][y].King {
-			xdirs = []int{1, -1}
-		} else if board[x][y].Color == "r" {
-			xdirs = append(xdirs, 1)
-		} else if board[x][y].Color == "w" {
-			xdirs = append(xdirs, -1)
-		}
 
 		for _, xdir := range xdirs {
 
@@ -326,6 +406,7 @@ func generateValidMoves(board [][]square, x int, y int, color string) []move {
 }
 
 func copyBoard(board [][]square) [][]square {
+
 	newBoard := make([][]square, 8)
 	for x := range board {
 		for y := range board {

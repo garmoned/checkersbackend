@@ -37,8 +37,6 @@ func readJSON(w http.ResponseWriter, r *http.Request) {
 
 	var montyMove = montecarlomove(req.Board, req.Color)
 
-	printBoard(req.Board)
-
 	var jsonData, _ = json.Marshal(montyMove)
 
 	fmt.Println(string(jsonData))
