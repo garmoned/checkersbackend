@@ -47,6 +47,8 @@ type opponentPos struct {
 
 func montecarlomove(board [][]square, color string) piecemove {
 
+	fmt.Println(color)
+
 	var root node
 	root.boardState = board
 	root.sims = 0
@@ -62,14 +64,11 @@ func montecarlomove(board [][]square, color string) piecemove {
 
 	expandNode(&root)
 
-	var iterations = 1000
+	var iterations = 4000
 
 	for i := 0; i < iterations; i++ {
 		expandtree(&root, color)
 	}
-
-	recurPrint(&root)
-
 	return selectBestMove(root)
 }
 
@@ -106,7 +105,7 @@ func selectBestMove(root node) piecemove {
 }
 
 func recurPrint(node *node) {
-
+	fmt.Println("move ", node.movecolor, " ", node.move.Piece, " moves  to {", node.move.Piecemove.X, " ", node.move.Piecemove.Y, "} ", " sims ", node.sims, " flag:", node.move.Piecemove.Flag)
 	if len(node.children) == 0 {
 		return
 	}
@@ -121,7 +120,6 @@ func recurPrint(node *node) {
 
 	}
 
-	fmt.Println("move ", bestNode.movecolor, " ", bestNode.move.Piece, " moves  to {", bestNode.move.Piecemove.X, " ", bestNode.move.Piecemove.Y, "} ", " sims ", bestNode.sims)
 	recurPrint(bestNode)
 }
 
@@ -222,7 +220,7 @@ func getLoserMT(board [][]square, startingColor string, losers chan string, wg *
 
 		var newColor = opposingColor(startingColor)
 
-		var newMoves = generateAllValidMoves(newBoard, startingColor)
+		var newMoves = generateAllValidMoves(newBoard, newColor)
 
 		if newMove.Piecemove.Flag == capture && (len(newMoves) > 0) &&
 			newMoves[0].Piecemove.Flag == capture {
@@ -265,7 +263,7 @@ func playOut(node *node, rootcolor string) {
 	for i := 0; i < num_threads; i++ {
 
 		wg.Add(1)
-		go getLoserMT(copyBoard(node.boardState), rootcolor, losers, &wg)
+		go getLoserMT(copyBoard(node.boardState), opposingColor(rootcolor), losers, &wg)
 	}
 
 	wg.Wait()
@@ -273,7 +271,7 @@ func playOut(node *node, rootcolor string) {
 
 	for res := range losers {
 
-		backPropagate(node, res != rootcolor)
+		backPropagate(node, res == "w")
 
 	}
 
