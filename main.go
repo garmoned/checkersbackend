@@ -17,8 +17,10 @@ type square struct {
 }
 
 type request struct {
-	Board [][]square
-	Color string
+	Board      [][]square
+	Color      string
+	Iterations int
+	Threads    int
 }
 
 func root(w http.ResponseWriter, r *http.Request) {
@@ -35,7 +37,7 @@ func readJSON(w http.ResponseWriter, r *http.Request) {
 		json.Unmarshal([]byte(key), &req)
 	}
 
-	var montyMove = montecarlomove(req.Board, req.Color)
+	var montyMove = montecarlomove(req.Board, req.Color, req.Iterations, req.Threads)
 
 	var jsonData, _ = json.Marshal(montyMove)
 

@@ -17,10 +17,10 @@ type node struct {
 
 	boardState [][]square
 
-	children  []*node
-	move      piecemove
-	parent    *node
-	movecolor string
+	children      []*node
+	move          piecemove
+	parent        *node
+	colorWhoMoved string
 }
 
 type move struct {
@@ -45,7 +45,13 @@ type opponentPos struct {
 	Y int `json:"y"`
 }
 
-func montecarlomove(board [][]square, color string) piecemove {
+var num_threads int
+
+func montecarlomove(board [][]square, color string, iterations int, threads int) piecemove {
+
+	num_threads = threads
+
+	fmt.Println("number of threads: ", num_threads, " iterations: ", iterations)
 
 	fmt.Println(color)
 
@@ -54,7 +60,7 @@ func montecarlomove(board [][]square, color string) piecemove {
 	root.sims = 0
 	root.wins = 0
 	root.children = nil
-	root.movecolor = opposingColor(color)
+	root.colorWhoMoved = opposingColor(color)
 
 	var startingMoves = generateAllValidMoves(board, color)
 
@@ -63,8 +69,6 @@ func montecarlomove(board [][]square, color string) piecemove {
 	}
 
 	expandNode(&root)
-
-	var iterations = 4000
 
 	for i := 0; i < iterations; i++ {
 		expandtree(&root, color)
@@ -85,7 +89,7 @@ func expandtree(root *node, color string) {
 
 	}
 
-	playOut(testNode, color)
+	playOut(testNode)
 
 }
 
@@ -105,7 +109,7 @@ func selectBestMove(root node) piecemove {
 }
 
 func recurPrint(node *node) {
-	fmt.Println("move ", node.movecolor, " ", node.move.Piece, " moves  to {", node.move.Piecemove.X, " ", node.move.Piecemove.Y, "} ", " sims ", node.sims, " flag:", node.move.Piecemove.Flag)
+	fmt.Println("move ", node.colorWhoMoved, " ", node.move.Piece, " moves  to {", node.move.Piecemove.X, " ", node.move.Piecemove.Y, "} ", " sims ", node.sims, " wins: ", node.wins, " flag:", node.move.Piecemove.Flag)
 	if len(node.children) == 0 {
 		return
 	}
@@ -146,7 +150,7 @@ func selectNode(node *node) *node {
 func createNewNode(movetomake piecemove, board [][]square, movecolor string, parent *node) *node {
 	var newNode node
 	newNode.boardState = playmove(movetomake, copyBoard(board))
-	newNode.movecolor = movecolor
+	newNode.colorWhoMoved = movecolor
 	newNode.sims = 0
 	newNode.wins = 0
 	newNode.move = movetomake
@@ -206,11 +210,11 @@ func getLoser(board [][]square, startingColor string) string {
 	return startingColor
 }
 
-func getLoserMT(board [][]square, startingColor string, losers chan string, wg *sync.WaitGroup) {
+func getLoserMT(board [][]square, currentColor string, losers chan string, wg *sync.WaitGroup) {
 
 	defer wg.Done()
 
-	var moves = generateAllValidMoves(board, startingColor)
+	var moves = generateAllValidMoves(board, currentColor)
 
 	for len(moves) > 0 {
 
@@ -218,29 +222,34 @@ func getLoserMT(board [][]square, startingColor string, losers chan string, wg *
 
 		var newBoard = playmove(newMove, board)
 
-		var newColor = opposingColor(startingColor)
+		var newColor = opposingColor(currentColor)
 
-		var newMoves = generateAllValidMoves(newBoard, newColor)
+		//if we captured check if we have access to another capture with the current color
+		if newMove.Piecemove.Flag == capture {
 
-		if newMove.Piecemove.Flag == capture && (len(newMoves) > 0) &&
-			newMoves[0].Piecemove.Flag == capture {
-			newColor = startingColor
+			var newMoves = generateAllValidMoves(newBoard, currentColor)
+
+			if (len(newMoves) > 0) &&
+				newMoves[0].Piecemove.Flag == capture {
+
+				newColor = currentColor
+			}
 		}
 
 		board = newBoard
-		startingColor = newColor
+		currentColor = newColor
 
-		moves = generateAllValidMoves(board, startingColor)
+		moves = generateAllValidMoves(board, currentColor)
 	}
 
-	losers <- startingColor
+	losers <- currentColor
 
 	return
 }
 
-func backPropagate(node *node, win bool) {
+func backPropagate(node *node, winningColor string) {
 
-	if win {
+	if winningColor == node.colorWhoMoved {
 		node.wins++
 	}
 
@@ -248,14 +257,12 @@ func backPropagate(node *node, win bool) {
 
 	if node.parent != nil {
 
-		backPropagate(node.parent, win)
+		backPropagate(node.parent, winningColor)
 	}
 
 }
 
-func playOut(node *node, rootcolor string) {
-
-	num_threads := 1
+func playOut(node *node) {
 
 	losers := make(chan string, num_threads)
 	var wg sync.WaitGroup
@@ -263,7 +270,7 @@ func playOut(node *node, rootcolor string) {
 	for i := 0; i < num_threads; i++ {
 
 		wg.Add(1)
-		go getLoserMT(copyBoard(node.boardState), opposingColor(rootcolor), losers, &wg)
+		go getLoserMT(copyBoard(node.boardState), opposingColor(node.colorWhoMoved), losers, &wg)
 	}
 
 	wg.Wait()
@@ -271,7 +278,7 @@ func playOut(node *node, rootcolor string) {
 
 	for res := range losers {
 
-		backPropagate(node, res == "w")
+		backPropagate(node, opposingColor(res))
 
 	}
 
@@ -279,14 +286,14 @@ func playOut(node *node, rootcolor string) {
 
 func expandNode(node *node) {
 
-	var newColor = opposingColor(node.movecolor)
+	var newColor = opposingColor(node.colorWhoMoved)
 
 	if node.move.Piecemove.Flag == capture {
 
-		newmoves := generateValidMoves(node.boardState, node.move.Piece.Xpos, node.move.Piece.Ypos, newColor)
+		newmoves := generateAllValidMoves(node.boardState, node.colorWhoMoved)
 
-		if len(newmoves) > 0 && newmoves[0].Flag == capture {
-			newColor = node.movecolor
+		if len(newmoves) > 0 && newmoves[0].Piecemove.Flag == capture {
+			newColor = node.colorWhoMoved
 		}
 	}
 
