@@ -1,0 +1,409 @@
+{
+    "board": [
+        [
+            {
+                "Color": "null",
+                "King": false,
+                "X": 0,
+                "Y": 0
+            },
+            {
+                "Color": "r",
+                "King": false,
+                "X": 0,
+                "Y": 1
+            },
+            {
+                "Color": "null",
+                "King": false,
+                "X": 0,
+                "Y": 2
+            },
+            {
+                "Color": "r",
+                "King": false,
+                "X": 0,
+                "Y": 3
+            },
+            {
+                "Color": "null",
+                "King": false,
+                "X": 0,
+                "Y": 4
+            },
+            {
+                "Color": "r",
+                "King": false,
+                "X": 0,
+                "Y": 5
+            },
+            {
+                "Color": "null",
+                "King": false,
+                "X": 0,
+                "Y": 6
+            },
+            {
+                "Color": "r",
+                "King": false,
+                "X": 0,
+                "Y": 7
+            }
+        ],
+        [
+            {
+                "Color": "r",
+                "King": false,
+                "X": 1,
+                "Y": 0
+            },
+            {
+                "Color": "null",
+                "King": false,
+                "X": 1,
+                "Y": 1
+            },
+            {
+                "Color": "r",
+                "King": false,
+                "X": 1,
+                "Y": 2
+            },
+            {
+                "Color": "null",
+                "King": false,
+                "X": 1,
+                "Y": 3
+            },
+            {
+                "Color": "r",
+                "King": false,
+                "X": 1,
+                "Y": 4
+            },
+            {
+                "Color": "null",
+                "King": false,
+                "X": 1,
+                "Y": 5
+            },
+            {
+                "Color": "r",
+                "King": false,
+                "X": 1,
+                "Y": 6
+            },
+            {
+                "Color": "null",
+                "King": false,
+                "X": 1,
+                "Y": 7
+            }
+        ],
+        [
+            {
+                "Color": "null",
+                "King": false,
+                "X": 2,
+                "Y": 0
+            },
+            {
+                "Color": "w",
+                "King": false,
+                "X": 2,
+                "Y": 1,
+                "selected": false
+            },
+            {
+                "Color": "null",
+                "King": false,
+                "X": 2,
+                "Y": 2
+            },
+            {
+                "Color": "r",
+                "King": false,
+                "X": 2,
+                "Y": 3
+            },
+            {
+                "Color": "null",
+                "King": false,
+                "X": 2,
+                "Y": 4
+            },
+            {
+                "Color": "r",
+                "King": false,
+                "X": 2,
+                "Y": 5
+            },
+            {
+                "Color": "null",
+                "King": false,
+                "X": 2,
+                "Y": 6
+            },
+            {
+                "Color": "null",
+                "King": false,
+                "X": 2,
+                "Y": 7
+            }
+        ],
+        [
+            {
+                "Color": "null",
+                "King": false,
+                "X": 3,
+                "Y": 0
+            },
+            {
+                "Color": "null",
+                "King": false,
+                "X": 3,
+                "Y": 1
+            },
+            {
+                "Color": "null",
+                "King": false,
+                "X": 3,
+                "Y": 2
+            },
+            {
+                "Color": "null",
+                "King": false,
+                "X": 3,
+                "Y": 3
+            },
+            {
+                "Color": "null",
+                "King": false,
+                "X": 3,
+                "Y": 4
+            },
+            {
+                "Color": "null",
+                "King": false,
+                "X": 3,
+                "Y": 5
+            },
+            {
+                "Color": "r",
+                "King": false,
+                "X": 3,
+                "Y": 6
+            },
+            {
+                "Color": "null",
+                "King": false,
+                "X": 3,
+                "Y": 7
+            }
+        ],
+        [
+            {
+                "Color": "null",
+                "King": false,
+                "X": 4,
+                "Y": 0
+            },
+            {
+                "Color": "null",
+                "King": false,
+                "X": 4,
+                "Y": 1
+            },
+            {
+                "Color": "null",
+                "King": false,
+                "X": 4,
+                "Y": 2
+            },
+            {
+                "Color": "null",
+                "King": false,
+                "X": 4,
+                "Y": 3
+            },
+            {
+                "Color": "null",
+                "King": false,
+                "X": 4,
+                "Y": 4
+            },
+            {
+                "Color": "null",
+                "King": false,
+                "X": 4,
+                "Y": 5
+            },
+            {
+                "Color": "null",
+                "King": false,
+                "X": 4,
+                "Y": 6
+            },
+            {
+                "Color": "null",
+                "King": false,
+                "X": 4,
+                "Y": 7
+            }
+        ],
+        [
+            {
+                "Color": "w",
+                "King": false,
+                "X": 5,
+                "Y": 0
+            },
+            {
+                "Color": "null",
+                "King": false,
+                "X": 5,
+                "Y": 1
+            },
+            {
+                "Color": "null",
+                "King": false,
+                "X": 5,
+                "Y": 2
+            },
+            {
+                "Color": "null",
+                "King": false,
+                "X": 5,
+                "Y": 3
+            },
+            {
+                "Color": "w",
+                "King": false,
+                "X": 5,
+                "Y": 4
+            },
+            {
+                "Color": "null",
+                "King": false,
+                "X": 5,
+                "Y": 5
+            },
+            {
+                "Color": "w",
+                "King": false,
+                "X": 5,
+                "Y": 6,
+                "selected": false
+            },
+            {
+                "Color": "null",
+                "King": false,
+                "X": 5,
+                "Y": 7
+            }
+        ],
+        [
+            {
+                "Color": "null",
+                "King": false,
+                "X": 6,
+                "Y": 0
+            },
+            {
+                "Color": "w",
+                "King": false,
+                "X": 6,
+                "Y": 1
+            },
+            {
+                "Color": "null",
+                "King": false,
+                "X": 6,
+                "Y": 2
+            },
+            {
+                "Color": "w",
+                "King": false,
+                "X": 6,
+                "Y": 3
+            },
+            {
+                "Color": "null",
+                "King": false,
+                "X": 6,
+                "Y": 4
+            },
+            {
+                "Color": "w",
+                "King": false,
+                "X": 6,
+                "Y": 5
+            },
+            {
+                "Color": "null",
+                "King": false,
+                "X": 6,
+                "Y": 6
+            },
+            {
+                "Color": "w",
+                "King": false,
+                "X": 6,
+                "Y": 7
+            }
+        ],
+        [
+            {
+                "Color": "w",
+                "King": false,
+                "X": 7,
+                "Y": 0
+            },
+            {
+                "Color": "null",
+                "King": false,
+                "X": 7,
+                "Y": 1
+            },
+            {
+                "Color": "w",
+                "King": false,
+                "X": 7,
+                "Y": 2
+            },
+            {
+                "Color": "null",
+                "King": false,
+                "X": 7,
+                "Y": 3
+            },
+            {
+                "Color": "w",
+                "King": false,
+                "X": 7,
+                "Y": 4
+            },
+            {
+                "Color": "null",
+                "King": false,
+                "X": 7,
+                "Y": 5
+            },
+            {
+                "Color": "w",
+                "King": false,
+                "X": 7,
+                "Y": 6
+            },
+            {
+                "Color": "null",
+                "King": false,
+                "X": 7,
+                "Y": 7
+            }
+        ]
+    ],
+    "color": "r",
+    "iterations": 10000,
+    "threads": 1
+}

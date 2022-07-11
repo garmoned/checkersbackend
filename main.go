@@ -63,9 +63,4 @@ func main() {
 		panic(err)
 	}
 
-	http.HandleFunc("/", readJSON)
-	if err := http.ListenAndServe(":"+port, nil); err != nil {
-		panic(err)
-	}
-
 }
